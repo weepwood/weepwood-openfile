@@ -3,7 +3,6 @@ import subprocess
 import sys
 import re
 from urllib.parse import unquote
-import tkinter as tk
 from tkinter import messagebox
 
 if len(sys.argv) < 2:
@@ -32,14 +31,15 @@ file_path = file_path.strip("'\"\\")
 # print('----------------')
 # print(file_path)
 
-if not os.path.exists(file_path):
-    # 创建主窗口
-    root = tk.Tk()
-    # 隐藏主窗口
-    root.withdraw()
-    # 弹出错误窗口
-    messagebox.showerror("Open File", "文件或文件夹不存在 \nThe file or folder does not exist")
-    root.destroy()
-    sys.exit(1)
+try:
+    # 如果文件不存在，则抛出异常
+    if not os.path.exists(file_path):
+        raise FileNotFoundError
+    # 使用 Windows 资源管理器打开文件
+    subprocess.run(['explorer.exe', file_path])
 
-subprocess.run(['explorer.exe', file_path])
+except FileNotFoundError:
+    # 文件不存在，打印错误信息并退出程序
+    # 弹出错误窗口
+    messagebox.showerror("Open File", file_path + "\n文件或文件夹不存在 \nThe file or folder does not exist")
+    sys.exit(1)
